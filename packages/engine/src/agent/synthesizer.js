@@ -39,7 +39,11 @@ function buildPersonalityText(memo) {
     parts.push(`${dom} 기운이 강한 분은 ${domTrait.career} 분야에서 역량이 잘 발휘됩니다.`);
   }
   if (tgd?.dominantTheme) {
-    parts.push(`월간 십신 테마는 "${tgd.dominantTheme}"으로, ${tgd.month?.lifeArea || ""}`);
+    const lifeArea = tgd.month?.lifeArea;
+    parts.push(lifeArea
+      ? `월간 십신 테마는 "${tgd.dominantTheme}"으로, ${lifeArea}`
+      : `월간 십신 테마는 "${tgd.dominantTheme}"입니다.`
+    );
   }
   if (ed.balanceScore < 50 && weakEl) {
     parts.push(`${weakEl} 기운이 부족하여 균형 보완이 필요합니다. (${weakTrait.remedy || "보완 방법 참고"})`);
@@ -109,16 +113,16 @@ function buildDaeunText(memo) {
   // 현재 대운
   const nowAge = memo.birthYear ? (new Date().getFullYear() - memo.birthYear) : null;
   const current = nowAge != null
-    ? (daeun.periods || []).find((p) => p.fromAge != null && p.fromAge <= nowAge && p.toAge > nowAge) || null
+    ? (daeun.periods || []).find((p) => p.fromAge != null && p.fromAge <= nowAge && p.toAge >= nowAge) || null
     : null;
 
   if (current) {
     parts.push(`현재 대운: ${current.pillar}(${Math.round(current.fromAge)}~${Math.round(current.toAge)}세)`);
   }
 
-  // 다가오는 대운 3개
+  // 다가오는 대운 3개 (fromAge가 현재 나이 이후인 것)
   const upcoming = (daeun.periods || [])
-    .filter((p) => p.fromAge != null)
+    .filter((p) => p.fromAge != null && (nowAge == null || p.fromAge > nowAge))
     .slice(0, 3);
   if (upcoming.length > 0) {
     parts.push("향후 대운: " + upcoming.map((p) => `${p.pillar}(${Math.round(p.fromAge)}세~)`).join(" → "));

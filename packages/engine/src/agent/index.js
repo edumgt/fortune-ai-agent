@@ -18,7 +18,7 @@ const { createInitialPlan, createReflectionPlan, explainReflectionPlan } = requi
 const { reflect }                                    = require("./reflector");
 const { synthesize }                                 = require("./synthesizer");
 
-const MAX_ITERATIONS = 2; // 최대 반성 반복 횟수
+const MAX_REFLECTION_ITERATIONS = 2; // 최대 반성 반복 횟수
 
 /**
  * Agentic 사주 분석을 수행합니다.
@@ -109,7 +109,7 @@ async function analyzeAgentic(input, ruleset, opts = {}) {
   }
 
   // ── Phase 3: Reflect ─────────────────────────────────────────────────────
-  for (let iteration = 0; iteration < MAX_ITERATIONS; iteration++) {
+  for (let iteration = 0; iteration < MAX_REFLECTION_ITERATIONS; iteration++) {
     stepIdx++;
     const reflection = reflect(ctx.memo, executed);
     trace.push({

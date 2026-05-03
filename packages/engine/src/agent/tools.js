@@ -173,7 +173,7 @@ const TOOL_DAEUN = {
 
     const age = new Date().getFullYear() - ctx.input.year;
     const currentPeriod = daeun.periods?.find(
-      (p) => p.fromAge != null && p.fromAge <= age && p.toAge > age
+      (p) => p.fromAge != null && p.fromAge <= age && p.toAge >= age
     ) || null;
 
     return {
@@ -241,8 +241,14 @@ const TOOL_ELEMENT_DETAIL = {
     // 불균형 경고
     const warnings = [];
     Object.entries(ratios).forEach(([el, r]) => {
-      if (r > 0.45) warnings.push(`${el}(${(r * 100).toFixed(0)}%) 과잉 — ${ELEMENT_TRAITS[el]?.health || ""} 관련 주의`);
-      if (r === 0)  warnings.push(`${el} 완전 부재 — ${ELEMENT_TRAITS[el]?.remedy || ""}`);
+      if (r > 0.45) {
+        const healthNote = ELEMENT_TRAITS[el]?.health;
+        warnings.push(healthNote
+          ? `${el}(${(r * 100).toFixed(0)}%) 과잉 — ${healthNote} 관련 주의`
+          : `${el}(${(r * 100).toFixed(0)}%) 과잉`
+        );
+      }
+      if (r === 0) warnings.push(`${el} 완전 부재 — ${ELEMENT_TRAITS[el]?.remedy || "해당 기운 보강 필요"}`);
     });
 
     const stemElement = STEM_ELEMENT[saju.pillars.day.stem];
@@ -258,8 +264,8 @@ const TOOL_ELEMENT_DETAIL = {
     };
 
     return {
-      dominant:     { element: dom, ratio: +(domRatio * 100).toFixed(1) + "%", traits: domTrait },
-      weak:         { element: weak, ratio: +(ratios[weak] * 100).toFixed(1) + "%", remedy: weakTrait.remedy },
+      dominant:     { element: dom, ratio: (domRatio * 100).toFixed(1) + "%", traits: domTrait },
+      weak:         { element: weak, ratio: (ratios[weak] * 100).toFixed(1) + "%", remedy: weakTrait.remedy },
       balanceScore,
       generates,
       controls,
@@ -270,7 +276,7 @@ const TOOL_ELEMENT_DETAIL = {
         keywords: ELEMENT_TRAITS[stemElement]?.keywords || [],
       },
       allRatios: Object.fromEntries(
-        Object.entries(ratios).map(([k, v]) => [k, +(v * 100).toFixed(1) + "%"])
+        Object.entries(ratios).map(([k, v]) => [k, (v * 100).toFixed(1) + "%"])
       ),
     };
   },
@@ -299,7 +305,7 @@ const TOOL_TEN_GODS_DETAIL = {
     if (map.hour  === "식신/상관") patterns.push("창의·표현 재능이 말년에 꽃핌");
     if (map.year === map.month) patterns.push("연간과 월간 십신 일치 — 에너지 집중");
 
-    ctx.memo.tenGodsDetail = { patterns };
+    ctx.memo.tenGodsDetail = { patterns, dominantTheme: monthMeaning.theme, month: monthMeaning };
 
     return {
       year:  { god: map.year,  ...yearMeaning  },

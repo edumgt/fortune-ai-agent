@@ -36,7 +36,7 @@ function createInitialPlan(input, opts = {}) {
     plan.push("daeun_forecast");
   }
 
-  if (opts.includeDailyFortune !== false) {
+  if ((opts.includeDailyFortune ?? true) === true) {
     plan.push("daily_context");
   }
 
@@ -73,7 +73,7 @@ function explainReflectionPlan(memo) {
   const balance = memo.elementDetail?.balanceScore ?? 100;
 
   if (mlConf < LOW_CONFIDENCE_THRESHOLD) {
-    reasons.push(`ML 신뢰도 낮음(${(mlConf * 100).toFixed(1)}% < ${(LOW_CONFIDENCE_THRESHOLD * 100).toFixed(0)}%)`);
+    reasons.push(`ML 신뢰도 낮음(${(mlConf * 100).toFixed(0)}% < ${(LOW_CONFIDENCE_THRESHOLD * 100).toFixed(0)}%)`);
   }
   if (balance < LOW_BALANCE_THRESHOLD) {
     reasons.push(`오행 균형도 낮음(${balance} < ${LOW_BALANCE_THRESHOLD})`);
