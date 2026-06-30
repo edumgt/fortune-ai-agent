@@ -86,3 +86,36 @@ export async function subscribePush(subscription) {
 export async function unsubscribePush() {
   return jdelete("/api/push/subscribe");
 }
+
+export async function calcBiorhythm(input) {
+  return jpost("/api/biorhythm", input);
+}
+
+export async function getMbtiQuestions() {
+  return jget("/api/mbti/questions");
+}
+
+export async function calcMbti(answers) {
+  return jpost("/api/mbti", { answers });
+}
+
+export async function getInvestmentQuestions() {
+  return jget("/api/investment/questions");
+}
+
+export async function calcInvestment(answers, personalInfo) {
+  return jpost("/api/investment", { answers, personalInfo });
+}
+
+export async function getLotto(input) {
+  return jpost("/api/lotto", input);
+}
+
+export async function getStockTiming({ symbol, period, interval }) {
+  const params = new URLSearchParams({ symbol, period: period || "1y", interval: interval || "1h" });
+  return jget(`/api/stock-timing?${params.toString()}`);
+}
+
+export async function searchTicker(q) {
+  return jget(`/api/stock-timing/search?${new URLSearchParams({ q }).toString()}`);
+}

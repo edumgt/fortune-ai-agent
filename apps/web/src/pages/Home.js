@@ -1,5 +1,5 @@
 import { card, alertBox, escapeHtml } from "../ui/components.js";
-import { calcSaju, API_BASE, setApiBase } from "../api.js";
+import { calcSaju } from "../api.js";
 
 function defaultForm() {
   return {
@@ -17,18 +17,6 @@ function defaultForm() {
 export function HomePage(state) {
   const f = state.form || defaultForm();
   state.form = f;
-
-  const apiCard = card(
-    "API 설정",
-    `
-      <div class="text-sm text-slate-600">백엔드 주소를 변경할 수 있습니다.</div>
-      <div class="mt-3 flex flex-col md:flex-row gap-2">
-        <input id="apiBase" class="w-full md:flex-1 px-3 py-2 rounded-xl border bg-white"
-          value="${escapeHtml(API_BASE)}" />
-        <button id="saveApiBase" class="px-4 py-2 rounded-xl bg-slate-900 text-white">저장</button>
-      </div>
-    `
-  );
 
   const formCard = card(
     "내 사주 계산",
@@ -77,8 +65,8 @@ export function HomePage(state) {
       </div>
 
       <div class="md:col-span-2 flex gap-2 mt-2">
-        <button type="submit" class="px-4 py-2 rounded-xl bg-slate-900 text-white">계산하기</button>
-        <a href="#/daeun" class="px-4 py-2 rounded-xl border bg-white">대운 페이지로</a>
+        <button type="submit" class="btn-primary">계산하기</button>
+        <a href="#/daeun" class="btn-secondary">대운 페이지로</a>
       </div>
     </form>
 
@@ -88,8 +76,7 @@ export function HomePage(state) {
 
   return `
     <div class="space-y-4">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        ${apiCard}
+      <div class="grid grid-cols-1 gap-4">
         ${card("사용 가이드", `
           <div class="space-y-2 text-sm text-slate-700">
             <div>1) 생년월일시 입력 → 사주팔자/오행/십신/대운 요약을 확인합니다.</div>
@@ -105,14 +92,6 @@ export function HomePage(state) {
 }
 
 export function HomeMount(state) {
-  const label = document.getElementById("apiBaseLabel");
-  if (label) label.textContent = API_BASE;
-
-  document.getElementById("saveApiBase")?.addEventListener("click", () => {
-    const v = document.getElementById("apiBase")?.value?.trim();
-    if (v) setApiBase(v);
-  });
-
   const msg = document.getElementById("homeMsg");
   const form = document.getElementById("sajuForm");
   form?.addEventListener("submit", async (e) => {

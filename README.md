@@ -2,14 +2,18 @@
 
 Node(CommonJS) + Open-source manseryeok 기반으로 **사주/대운/궁합/풀이/오늘운세** 가 동작하는 플랫폼입니다.
 
-![실행 화면 1](1.png)
-![실행 화면 2](2.png)
+![alt text](image.png)
 
 ## 주요 기능
 - 🔮 사주팔자(사주 계산, 오행, 십신, 대운)
 - 💑 궁합(합/충/해/파 분석 + 점수)
 - 📅 오늘의 운세(일진·세운 기반 연애/직업/재물/건강운)
 - 🤖 **Agentic AI 사주 분석** — Plan→Execute→Reflect→Synthesize 루프 기반 자율 심층 분석
+- 🌊 바이오리듬(신체/감정/지성 주기 계산 + 14일 추이 차트)
+- 🧠 MBTI 간이 성격유형 검사(20문항)
+- 💹 투자성향분석(10문항 + 개인정보 입력 → 자산배분·투자 가이드 리포트)
+- 🎱 로또번호 추천(생년월일 기반 오늘의 행운번호 + 랜덤 추천)
+- 📈 시간대별 주가흐름 분석(yfinance 기반, 장초반/점심시간/마감 구간 비교)
 - 👤 회원가입 · 로그인 (JWT 인증)
 - 🔔 매일 아침 푸시 알림(Web Push + GitHub Actions 스케줄)
 - 🐳 Docker 지원 (개발/배포)
@@ -80,11 +84,38 @@ npx web-push generate-vapid-keys
 | POST | `/api/push/subscribe` | 푸시 알림 구독 (JWT 필요) |
 | DELETE | `/api/push/subscribe` | 구독 취소 (JWT 필요) |
 | POST | `/api/push/send-daily` | 전체 구독자에게 운세 발송 (cron용) |
+| POST | `/api/biorhythm` | 바이오리듬 계산 (`birthDate`, 선택: `targetDate`, `rangeDays`) |
+| GET | `/api/mbti/questions` | MBTI 설문 문항(20개) 조회 |
+| POST | `/api/mbti` | MBTI 채점 (`answers`: `"a"`/`"b"` 20개) |
+| GET | `/api/investment/questions` | 투자성향 설문 문항(10개) 조회 |
+| POST | `/api/investment` | 투자성향 분석 (`answers`: 0~3 인덱스 10개, 선택: `personalInfo`) → 자산배분 + 투자 가이드 리포트 |
+| POST | `/api/lotto` | 로또번호 추천 (선택: `birthDate`, `count`) |
+| GET | `/api/stock-timing` | 시간대별 주가흐름 분석 (`symbol`, `period`: 3mo\|6mo\|1y\|2y, `interval`: 1h) — yfinance 기반 |
+| GET | `/api/stock-timing/search` | 종목명/티커 검색 (`q`) — 국내 주요 종목은 한글 회사명으로도 검색 가능 |
+
+## 개인분석 모듈
+
+| 모듈 | 설명 |
+|------|------|
+| 바이오리듬 | 출생일 기준 신체(23일)/감정(28일)/지성(33일) 주기를 사인파로 계산하고, 오늘 지수와 ±7일 추이를 보여줍니다. |
+| MBTI 검사 | EI/SN/TF/JP 4개 이분지표 × 5문항(총 20문항) 간이 설문으로 16개 유형 중 하나를 산출합니다. |
+| 투자성향분석 | 증권사 표준투자권유준칙 스타일 10문항 설문 + 나이·투자기간·목표·월 투자가능금액 등 개인정보를 더해 5단계 투자성향과 자산배분, 서술형 투자 가이드 리포트를 생성합니다. |
+| 로또번호 추천 | 생년월일을 입력하면 오늘 하루 고정되는 "오늘의 행운번호" 1세트 + 완전 무작위 추천 세트를 생성합니다(참고용 데모). |
+| 시간대별 주가흐름 분석 | `apps/api/scripts/stock_timing.py`가 yfinance로 최근 1년 1시간봉을 가져와, 거래일별 첫/가운데/마지막 시간봉을 장초반/점심시간/마감 구간으로 근사해 어느 시간대 상승 빈도·평균 수익률이 높은지 분석합니다. Yahoo Finance의 분봉 제공 제약상 30분봉 이하는 최근 60일로만 제공되어 1년 분석에는 1시간봉을 사용합니다(자세한 내용은 스크립트 상단 주석 참고). 화면에서 티커를 모르면 "종목 검색" 버튼으로 회사명(국내 주요 종목은 한글 가능) 검색 모달을 띄워 선택할 수 있습니다. Node API는 `python3`를 `child_process.execFile`로 호출합니다. |
+
+### 시간대별 주가분석 — 로컬(비-Docker) 실행 시 Python 의존성 설치
+
+```bash
+pip3 install -r apps/api/scripts/requirements.txt
+# 또는 가상환경 사용 시: python3 -m venv .venv && .venv/bin/pip install -r apps/api/scripts/requirements.txt
+```
+
+`tzdata` 패키지가 누락되면 `No time zone found with key America/New_York`류의 오류가 발생할 수 있습니다(특히 OS에 IANA 타임존 데이터베이스가 없는 환경). `requirements.txt`에 `tzdata`가 포함되어 있으니 위 명령으로 함께 설치하세요.
 
 ## 구성
 
-- `packages/engine` : 만세력 어댑터 + 오행/십신/대운/궁합/일진/오늘운세 엔진 + **ML/DL 모듈** + **Agentic AI 모듈**
-- `apps/api` : Express API 서버 (인증, 푸시, ML 예측, Agentic 분석 포함)
+- `packages/engine` : 만세력 어댑터 + 오행/십신/대운/궁합/일진/오늘운세 엔진 + **ML/DL 모듈** + **Agentic AI 모듈** + 바이오리듬/MBTI/투자성향/로또 모듈
+- `apps/api` : Express API 서버 (인증, 푸시, ML 예측, Agentic 분석, 개인분석 모듈 포함) + `scripts/stock_timing.py` (yfinance 분석)
 - `apps/web` : Vite + Tailwind + Offcanvas 웹 앱 (로그인/회원가입 포함)
 
 ## 한국천문연구원(KASI) 데이터 반영

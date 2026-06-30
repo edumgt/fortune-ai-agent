@@ -14,7 +14,7 @@ export function LoginPage() {
             <label class="text-xs text-slate-600">비밀번호</label>
             <input name="password" type="password" class="w-full px-3 py-2 rounded-xl border bg-white" placeholder="123456" required />
           </div>
-          <button type="submit" class="w-full px-4 py-2 rounded-xl bg-slate-900 text-white">로그인</button>
+          <button type="submit" class="btn-primary w-full">로그인</button>
         </form>
         <div id="loginMsg" class="mt-3"></div>
         <div class="mt-4 text-sm text-slate-600 text-center">

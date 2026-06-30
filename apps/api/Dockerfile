@@ -12,6 +12,12 @@ COPY apps/api/ apps/api/
 
 FROM base AS runner
 WORKDIR /app
+COPY apps/api/scripts/requirements.txt /tmp/requirements.txt
+RUN apk add --no-cache python3 py3-pip \
+  && python3 -m venv /opt/venv \
+  && /opt/venv/bin/pip install --no-cache-dir -r /tmp/requirements.txt \
+  && rm /tmp/requirements.txt
+ENV PATH="/opt/venv/bin:$PATH"
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/packages ./packages
 COPY --from=builder /app/apps/api ./apps/api

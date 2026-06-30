@@ -79,7 +79,7 @@ function renderPushSection() {
       <div class="text-sm text-slate-600">아침마다 오늘의 운세를 푸시 알림으로 받아보세요.</div>
       <div id="pushStatus" class="text-xs text-slate-500">푸시 알림 상태를 확인 중...</div>
       <div class="flex gap-2">
-        <button id="subscribePushBtn" class="hidden px-4 py-2 rounded-xl bg-slate-900 text-white text-sm">🔔 알림 구독하기</button>
+        <button id="subscribePushBtn" class="hidden btn-primary text-sm">🔔 알림 구독하기</button>
         <button id="unsubscribePushBtn" class="hidden px-4 py-2 rounded-xl border bg-white text-sm">🔕 알림 취소</button>
       </div>
       <div id="pushMsg" class="mt-1"></div>

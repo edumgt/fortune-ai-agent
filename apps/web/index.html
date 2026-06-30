@@ -6,48 +6,50 @@
     <title>Fortune – 사주 · 운세 · 궁합</title>
   </head>
   <body class="bg-slate-50 text-slate-900">
-    <header class="sticky top-0 z-40 bg-white/90 backdrop-blur border-b md:hidden">
+    <header class="sticky top-0 z-40 bg-white/90 backdrop-blur border-b">
       <div class="flex items-center gap-3 px-3 py-2">
-        <button data-oc-open class="inline-flex items-center justify-center w-10 h-10 rounded-xl border bg-white active:scale-[0.98]" aria-label="Open menu">☰</button>
-        <div class="font-semibold">Fortune 🔮</div>
-        <div class="ml-auto text-xs text-slate-500">사주팔자</div>
+        <button data-oc-open class="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-xl border bg-white active:scale-[0.98]" aria-label="메뉴 열기">☰</button>
+        <div class="font-semibold gradient-text">Fortune 🔮</div>
+        <div class="ml-auto flex items-center gap-2">
+          <span class="hidden md:inline text-xs text-slate-400">API: <span id="apiBaseLabelTop"></span></span>
+          <button data-oc-right-open class="inline-flex items-center justify-center w-10 h-10 rounded-xl border bg-white active:scale-[0.98]" aria-label="계정 · 설정 열기">⚙️</button>
+        </div>
       </div>
     </header>
 
     <div data-oc-overlay class="hidden fixed inset-0 bg-black/40 z-40"></div>
+    <div data-oc-right-overlay class="hidden fixed inset-0 bg-black/40 z-40"></div>
 
     <!-- Layout Wrapper (desktop: flex) -->
 <div class="md:flex md:min-h-screen">
   <!-- Sidebar / Offcanvas Panel -->
   <aside
     data-oc-panel
-    class="fixed z-50 inset-y-0 left-0 w-72 bg-white border-r -translate-x-full transition-transform duration-200
+    class="copilot-sidebar fixed z-50 inset-y-0 left-0 w-72 border-r border-white/10 -translate-x-full transition-transform duration-200
            md:translate-x-0 md:static md:w-64 md:flex md:flex-col"
   >
     <div class="p-4 flex items-center justify-between md:hidden">
-      <div class="font-semibold">메뉴</div>
-      <button data-oc-close class="w-10 h-10 rounded-xl border bg-white">✕</button>
+      <div class="font-semibold text-white">메뉴</div>
+      <button data-oc-close class="w-10 h-10 rounded-xl border border-white/20 bg-white/5 text-white">✕</button>
     </div>
 
-    <div class="p-4 border-b">
-      <div class="font-semibold text-lg">Fortune 🔮</div>
-      <div class="text-xs text-slate-500 mt-1">사주 · 대운 · 궁합 · 운세</div>
+    <div class="p-4 border-b border-white/10">
+      <div class="font-semibold text-lg text-white">Fortune 🔮</div>
+      <div class="text-xs text-slate-400 mt-1">사주 · 대운 · 궁합 · 운세 · 개인분석</div>
     </div>
 
-    <nav class="p-3 space-y-1">
+    <nav class="p-3 space-y-1 flex-1 overflow-auto">
       <a class="nav-link" href="#/">내 사주</a>
       <a class="nav-link" href="#/daeun">대운</a>
       <a class="nav-link" href="#/gunghap">궁합</a>
       <a class="nav-link" href="#/daily">오늘 운세</a>
+      <div class="pt-3 mt-2 border-t border-white/10 text-[11px] uppercase tracking-wide text-slate-500 px-3">개인분석</div>
+      <a class="nav-link" href="#/biorhythm">바이오리듬</a>
+      <a class="nav-link" href="#/mbti">MBTI 검사</a>
+      <a class="nav-link" href="#/investment">투자성향분석</a>
+      <a class="nav-link" href="#/lotto">로또번호 추천</a>
+      <a class="nav-link" href="#/stock-timing">시간대별 주가분석</a>
     </nav>
-
-    <!-- User badge -->
-    <div id="userBadge" class="border-t"></div>
-
-    <!-- mt-auto가 동작하려면 aside가 flex-col이어야 함 (위에서 md:flex md:flex-col 추가) -->
-    <div class="mt-auto p-4 border-t text-xs text-slate-500">
-      API: <span id="apiBaseLabel"></span>
-    </div>
   </aside>
 
   <!-- Main -->
@@ -58,6 +60,31 @@
   </main>
 </div>
 
+    <!-- Right Offcanvas: 계정 · 설정 -->
+    <aside
+      data-oc-right-panel
+      class="fixed z-50 inset-y-0 right-0 w-80 max-w-[85vw] bg-white border-l translate-x-full transition-transform duration-200 flex flex-col"
+    >
+      <div class="p-4 flex items-center justify-between border-b">
+        <div class="font-semibold">계정 · 설정</div>
+        <button data-oc-right-close class="w-9 h-9 rounded-lg border bg-white">✕</button>
+      </div>
+      <div class="p-4 space-y-5 overflow-auto flex-1">
+        <div id="userBadge" class="rounded-xl border bg-slate-50"></div>
+
+        <div>
+          <div class="text-xs font-medium text-slate-500 mb-1">API 서버 주소</div>
+          <div class="flex gap-2">
+            <input id="apiBaseInput" class="flex-1 min-w-0 px-3 py-2 rounded-xl border bg-white text-sm" />
+            <button id="saveApiBaseBtn" class="btn-secondary text-sm shrink-0">저장</button>
+          </div>
+          <div class="text-[11px] text-slate-400 mt-1">현재 연결: <span id="apiBaseLabel"></span></div>
+        </div>
+      </div>
+      <div class="p-4 border-t text-[11px] text-slate-400">
+        사주/운세/개인분석은 참고용 데모입니다.
+      </div>
+    </aside>
 
     <script type="module" src="/src/main.js"></script>
   </body>

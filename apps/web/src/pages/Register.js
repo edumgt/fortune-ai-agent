@@ -22,7 +22,7 @@ export function RegisterPage() {
             <label class="text-xs text-slate-600">비밀번호 확인</label>
             <input name="password2" type="password" class="w-full px-3 py-2 rounded-xl border bg-white" placeholder="••••••" required minlength="6" />
           </div>
-          <button type="submit" class="w-full px-4 py-2 rounded-xl bg-slate-900 text-white">가입하기</button>
+          <button type="submit" class="btn-primary w-full">가입하기</button>
         </form>
         <div id="registerMsg" class="mt-3"></div>
         <div class="mt-4 text-sm text-slate-600 text-center">

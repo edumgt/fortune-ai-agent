@@ -1,5 +1,5 @@
 import { card, alertBox, escapeHtml } from "../ui/components.js";
-import { calcGunghap, API_BASE, setApiBase } from "../api.js";
+import { calcGunghap } from "../api.js";
 
 function personForm(prefix) {
   return `
@@ -77,21 +77,13 @@ function renderRelations(rel) {
 export function GunghapPage() {
   return `
     <div class="space-y-4">
-      ${card("API 설정", `
-        <div class="text-sm text-slate-600">현재: <b>${escapeHtml(API_BASE)}</b></div>
-        <div class="mt-2 flex gap-2">
-          <input id="apiBase2" class="flex-1 px-3 py-2 rounded-xl border bg-white" value="${escapeHtml(API_BASE)}" />
-          <button id="saveApiBase2" class="px-4 py-2 rounded-xl bg-slate-900 text-white">저장</button>
-        </div>
-      `)}
-
       ${card("궁합", `
         <form id="gunghapForm" class="space-y-3">
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
             ${personForm("a")}
             ${personForm("b")}
           </div>
-          <button type="submit" class="px-4 py-2 rounded-xl bg-slate-900 text-white">궁합 계산</button>
+          <button type="submit" class="btn-primary">궁합 계산</button>
         </form>
         <div id="gunghapMsg" class="mt-4"></div>
         <div id="gunghapOut" class="mt-4"></div>
@@ -101,11 +93,6 @@ export function GunghapPage() {
 }
 
 export function GunghapMount() {
-  document.getElementById("saveApiBase2")?.addEventListener("click", () => {
-    const v = document.getElementById("apiBase2")?.value?.trim();
-    if (v) setApiBase(v);
-  });
-
   const form = document.getElementById("gunghapForm");
   const msg = document.getElementById("gunghapMsg");
   const out = document.getElementById("gunghapOut");

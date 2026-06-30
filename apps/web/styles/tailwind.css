@@ -3,3 +3,27 @@
 @tailwind utilities;
 
 :root { color-scheme: light; }
+
+@layer components {
+  .btn-primary {
+    @apply px-4 py-2 rounded-xl text-white font-medium shadow-sm transition
+           bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600
+           hover:opacity-90 active:scale-[0.98] disabled:opacity-50;
+  }
+  .btn-secondary {
+    @apply px-4 py-2 rounded-xl border bg-white text-slate-700 hover:bg-slate-50 transition active:scale-[0.98];
+  }
+  .copilot-sidebar {
+    @apply bg-gradient-to-b from-indigo-950 via-slate-900 to-slate-950 text-slate-200;
+  }
+  .copilot-nav-link {
+    @apply block px-3 py-2 rounded-xl text-sm text-slate-300 hover:bg-white/10 hover:text-white transition;
+  }
+  .copilot-nav-link-active {
+    @apply block px-3 py-2 rounded-xl text-sm text-white font-medium transition
+           bg-gradient-to-r from-indigo-600/90 via-violet-600/90 to-fuchsia-600/90 shadow-sm;
+  }
+  .gradient-text {
+    @apply bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 bg-clip-text text-transparent;
+  }
+}

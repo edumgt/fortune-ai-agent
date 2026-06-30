@@ -61,7 +61,7 @@ export function SajuResultPage(state) {
       </div>
 
       ${card("대운(미리보기)", renderDaeunMini(r.daeun), `
-        <a href="#/daeun" class="inline-flex px-4 py-2 rounded-xl bg-slate-900 text-white">대운 자세히</a>
+        <a href="#/daeun" class="inline-flex btn-primary">대운 자세히</a>
       `)}
     </div>
   `;
