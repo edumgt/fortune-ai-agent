@@ -46,9 +46,11 @@ cp .env.example .env
 # 2. 빌드 & 실행
 docker compose up --build
 
-# WEB: http://localhost:8080
-# API: http://localhost:3000
+# WEB: http://localhost:18080
+# API: http://localhost:3100
 ```
+
+웹 포트를 바꾸려면 `WEB_PORT=18081 docker compose up -d --build`처럼 지정하세요. Windows에서 8080 포트가 예약된 환경도 있어 기본 웹 포트는 18080입니다.
 
 ## GitHub Actions 설정
 

@@ -18,7 +18,7 @@ function birthForm(state) {
   const f = state.ziweiForm || state.form || {};
   const number = (key, fallback) => Number.isInteger(f[key]) ? f[key] : fallback;
   const calendarType = f.calendarType === "lunar" ? "lunar" : "solar";
-  return '<form id="ziweiForm" class="grid grid-cols-2 md:grid-cols-4 gap-3">' +
+  return '<form id="ziweiForm" class="grid grid-cols-2 md:grid-cols-4 gap-4">' +
     '<label class="text-sm">달력<select name="calendarType" class="mt-1 w-full px-3 py-2 rounded-xl border bg-white">' +
       '<option value="solar"' + (calendarType === "solar" ? ' selected' : '') + '>양력</option>' +
       '<option value="lunar"' + (calendarType === "lunar" ? ' selected' : '') + '>음력</option>' +
@@ -30,22 +30,20 @@ function birthForm(state) {
     '<label id="ziweiLeapLabel" class="text-sm flex items-end gap-2 pb-2 ' + (calendarType === "lunar" ? '' : 'hidden') + '">' +
       '<input type="checkbox" name="isLeapMonth" class="w-4 h-4" ' + (f.isLeapMonth ? 'checked' : '') + '>윤달' +
     '</label>' +
-    '<span class="hidden md:block"></span>' +
     '<label class="text-sm">생년<input name="year" type="number" min="1" max="9999" required value="' + number("year", 1990) + '" class="mt-1 w-full px-3 py-2 rounded-xl border bg-white"></label>' +
     '<label class="text-sm">월<input name="month" type="number" min="1" max="12" required value="' + number("month", 1) + '" class="mt-1 w-full px-3 py-2 rounded-xl border bg-white"></label>' +
     '<label class="text-sm">일<input name="day" type="number" min="1" max="31" required value="' + number("day", 1) + '" class="mt-1 w-full px-3 py-2 rounded-xl border bg-white"></label>' +
-    '<span class="hidden md:block"></span>' +
     '<label class="text-sm">시 (0~23)<input name="hour" type="number" min="0" max="23" required value="' + number("hour", 9) + '" class="mt-1 w-full px-3 py-2 rounded-xl border bg-white"></label>' +
     '<label class="text-sm">분<input name="minute" type="number" min="0" max="59" required value="' + number("minute", 0) + '" class="mt-1 w-full px-3 py-2 rounded-xl border bg-white"></label>' +
-    '<div class="col-span-2 flex items-end"><button type="submit" class="btn-primary">명반 만들기</button></div>' +
+    '<div class="col-span-2 md:col-span-4 flex items-end"><button type="submit" class="btn-primary">명반 만들기</button></div>' +
     '</form><div id="ziweiMessage" class="mt-3" role="status" aria-live="polite"></div>';
 }
 
 function renderStar(star, isMajor = false) {
-  const className = isMajor ? 'bg-violet-100 text-violet-900 border-violet-200' : 'bg-slate-50 text-slate-700 border-slate-200';
+  const className = isMajor ? 'bg-blue-100 text-blue-900 border-blue-200' : 'bg-slate-50 text-slate-700 border-slate-200';
   return '<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md border text-xs ' + className + '">' +
     escapeHtml(star.name) +
-    (star.mutagen ? '<b class="text-fuchsia-700">化' + escapeHtml(star.mutagen) + '</b>' : '') +
+    (star.mutagen ? '<b class="text-blue-700">化' + escapeHtml(star.mutagen) + '</b>' : '') +
   '</span>';
 }
 
@@ -58,8 +56,8 @@ function renderPalace(palace) {
   const adjectives = palace.adjectiveStars.map((star) => escapeHtml(star.name)).join(' · ');
   return '<section style="grid-column:' + column + ';grid-row:' + row + '" class="min-h-40 p-2 rounded-xl border bg-white shadow-sm">' +
     '<div class="flex items-start justify-between gap-1 border-b pb-1 mb-1">' +
-      '<div class="text-sm font-semibold text-indigo-900">' + escapeHtml(PALACE_LABELS[palace.name] || palace.name) +
-        (palace.isBodyPalace ? '<span class="ml-1 text-[10px] text-fuchsia-700">신궁</span>' : '') + '</div>' +
+      '<div class="text-sm font-semibold text-blue-900">' + escapeHtml(PALACE_LABELS[palace.name] || palace.name) +
+        (palace.isBodyPalace ? '<span class="ml-1 text-[10px] text-blue-700">신궁</span>' : '') + '</div>' +
       '<span class="text-xs text-slate-500 shrink-0">' + escapeHtml(palace.heavenlyStem + palace.earthlyBranch) + '</span>' +
     '</div>' +
     '<div class="flex flex-wrap gap-1">' + majors + '</div>' +
@@ -71,8 +69,8 @@ function renderPalace(palace) {
 
 function renderChart(result) {
   const palaces = result.palaces.map(renderPalace).join('');
-  const center = '<div style="grid-column:2 / span 2;grid-row:2 / span 2" class="rounded-2xl border border-violet-200 bg-gradient-to-br from-indigo-50 via-white to-fuchsia-50 p-5 flex flex-col justify-center text-center">' +
-    '<div class="text-xl font-bold text-indigo-900">자미두수 명반</div>' +
+  const center = '<div style="grid-column:2 / span 2;grid-row:2 / span 2" class="rounded-xl border border-blue-200 bg-gradient-to-br from-blue-50 via-white to-sky-50 p-5 flex flex-col justify-center text-center">' +
+    '<div class="text-xl font-bold text-blue-900">자미두수 명반</div>' +
     '<div class="mt-2 text-sm text-slate-700">양력 ' + escapeHtml(result.solarDate) + '</div>' +
     '<div class="text-sm text-slate-700">' + escapeHtml(result.lunarDate) + '</div>' +
     '<div class="mt-1 text-sm text-slate-700">' + escapeHtml(result.time) + ' · ' + escapeHtml(result.timeRange) + '</div>' +
@@ -86,7 +84,7 @@ function renderChart(result) {
 
 function renderReading(result) {
   const areas = result.reading.map((area) =>
-    '<div class="p-3 rounded-xl border bg-slate-50"><div class="font-semibold text-sm text-indigo-900">' +
+    '<div class="p-3 rounded-xl border bg-slate-50"><div class="font-semibold text-sm text-blue-900">' +
       escapeHtml(area.label) + ' · ' + escapeHtml(PALACE_LABELS[area.palace] || area.palace) +
     '</div><p class="mt-1 text-sm leading-6 text-slate-700">' + escapeHtml(area.text) + '</p></div>'
   ).join('');
@@ -100,8 +98,10 @@ function renderResult(result) {
 
 export function ZiweiPage(state) {
   return '<div class="space-y-4">' +
-    card("자미두수란?", '<div class="text-sm leading-6 text-slate-700">자미두수는 출생 연월일시로 12궁에 별을 배치해 삶의 여러 영역을 살펴보는 전통 운명학입니다. 사주가 음양오행과 네 기둥을 중심으로 읽는다면, 자미두수는 명궁·부부궁·재백궁·관록궁 등의 별 조합을 중심으로 읽습니다.</div>') +
-    card("출생 정보", birthForm(state), '<div class="text-xs text-slate-500">출생지 경도와 진태양시 보정은 적용하지 않습니다. 23시는 야자시, 0시는 조자시로 계산합니다. 윤달은 앞뒤 보정 규칙을 사용합니다.</div>') +
+    '<div class="ziwei-intro-grid">' +
+      card("자미두수란?", '<div class="text-sm leading-7 text-slate-700">자미두수는 출생 연월일시로 12궁에 별을 배치해 삶의 여러 영역을 살펴보는 전통 운명학입니다. 사주가 음양오행과 네 기둥을 중심으로 읽는다면, 자미두수는 명궁·부부궁·재백궁·관록궁 등의 별 조합을 중심으로 읽습니다.</div>') +
+      card("출생 정보", birthForm(state), '<div class="text-xs text-slate-500">출생지 경도와 진태양시 보정은 적용하지 않습니다. 23시는 야자시, 0시는 조자시로 계산합니다. 윤달은 앞뒤 보정 규칙을 사용합니다.</div>') +
+    '</div>' +
     '<div id="ziweiResult" class="space-y-4">' + (state.ziweiResult ? renderResult(state.ziweiResult) : '') + '</div>' +
   '</div>';
 }

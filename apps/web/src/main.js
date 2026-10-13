@@ -17,6 +17,7 @@ import { LottoPage, LottoMount } from "./pages/Lotto.js";
 import { StockTimingPage, StockTimingMount } from "./pages/StockTiming.js";
 import { ZiweiPage, ZiweiMount } from "./pages/Ziwei.js";
 import { API_BASE, getUser, logout, setApiBase } from "./api.js";
+import { escapeHtml } from "./ui/components.js";
 
 const state = { form: null, lastResult: null, ziweiForm: null, ziweiResult: null };
 
@@ -27,7 +28,7 @@ function renderUserBadge() {
   if (user) {
     el.innerHTML = `
       <div class="flex items-center justify-between gap-2 px-3 py-3 text-sm">
-        <span class="font-medium truncate max-w-[160px]">${user.name || user.email}</span>
+        <span class="font-medium truncate max-w-[160px]">${escapeHtml(user.name || user.email)}</span>
         <button id="logoutBtn" class="text-xs text-slate-500 underline">로그아웃</button>
       </div>`;
     document.getElementById("logoutBtn")?.addEventListener("click", logout);
@@ -77,14 +78,15 @@ function render() {
 
   const label = document.getElementById("apiBaseLabel");
   if (label) label.textContent = API_BASE;
-  const labelTop = document.getElementById("apiBaseLabelTop");
-  if (labelTop) labelTop.textContent = API_BASE;
-
   renderUserBadge();
 
-  document.querySelectorAll("a.nav-link").forEach((a) => {
-    const isActive = a.getAttribute("href") === `#${path}` || (path === "/" && a.getAttribute("href") === "#/");
-    a.className = `nav-link ${isActive ? "copilot-nav-link-active" : "copilot-nav-link"}`;
+  document.querySelectorAll("a.nav-link, a.quick-link").forEach((a) => {
+    const target = a.getAttribute("href")?.replace(/^#/, "");
+    const isSajuShortcut = a.classList.contains("quick-link") && target === "/" && ["/result", "/daeun"].includes(path);
+    const isActive = target === path || (target === "/" && path === "/result") || isSajuShortcut;
+    a.classList.toggle("active", isActive);
+    if (isActive) a.setAttribute("aria-current", "page");
+    else a.removeAttribute("aria-current");
   });
 }
 

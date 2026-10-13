@@ -3,90 +3,83 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f0f3fa" />
+    <link rel="preload" href="/fonts/PretendardVariable.woff2" as="font" type="font/woff2" crossorigin />
     <title>Fortune – 사주 · 자미두수 · 운세 · 궁합</title>
   </head>
-  <body class="bg-slate-50 text-slate-900">
-    <header class="sticky top-0 z-40 bg-white/90 backdrop-blur border-b">
-      <div class="flex items-center gap-3 px-3 py-2">
-        <button data-oc-open class="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-xl border bg-white active:scale-[0.98]" aria-label="메뉴 열기">☰</button>
-        <div class="font-semibold gradient-text">Fortune 🔮</div>
-        <div class="ml-auto flex items-center gap-2">
-          <span class="hidden md:inline text-xs text-slate-400">API: <span id="apiBaseLabelTop"></span></span>
-          <button data-oc-right-open class="inline-flex items-center justify-center w-10 h-10 rounded-xl border bg-white active:scale-[0.98]" aria-label="계정 · 설정 열기">⚙️</button>
+  <body>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <button type="button" data-oc-open class="menu-trigger" aria-label="전체 메뉴 열기" aria-controls="siteMenu" aria-expanded="false">
+          <span class="menu-bars" aria-hidden="true"><span></span><span></span><span></span></span>
+          <span>메뉴</span>
+        </button>
+        <a href="#/" class="site-brand" aria-label="Fortune 홈">✦ <span>Fortune</span></a>
+        <nav class="header-shortcuts" aria-label="주요 메뉴">
+          <a class="quick-link" href="#/">사주 분석</a>
+          <a class="quick-link" href="#/ziwei">자미두수</a>
+          <a class="quick-link" href="#/gunghap">궁합</a>
+          <a class="quick-link" href="#/daily">오늘 운세</a>
+        </nav>
+        <div class="header-actions">
+          <button type="button" data-oc-right-open class="settings-trigger" aria-label="계정 및 설정 열기" aria-controls="accountPanel" aria-expanded="false">⚙ <span>계정 · 설정</span></button>
         </div>
       </div>
     </header>
 
-    <div data-oc-overlay class="hidden fixed inset-0 bg-black/40 z-40"></div>
-    <div data-oc-right-overlay class="hidden fixed inset-0 bg-black/40 z-40"></div>
-
-    <!-- Layout Wrapper (desktop: flex) -->
-<div class="md:flex md:min-h-screen">
-  <!-- Sidebar / Offcanvas Panel -->
-  <aside
-    data-oc-panel
-    class="copilot-sidebar fixed z-50 inset-y-0 left-0 w-72 border-r border-white/10 -translate-x-full transition-transform duration-200
-           md:translate-x-0 md:static md:w-64 md:flex md:flex-col"
-  >
-    <div class="p-4 flex items-center justify-between md:hidden">
-      <div class="font-semibold text-white">메뉴</div>
-      <button data-oc-close class="w-10 h-10 rounded-xl border border-white/20 bg-white/5 text-white">✕</button>
-    </div>
-
-    <div class="p-4 border-b border-white/10">
-      <div class="font-semibold text-lg text-white">Fortune 🔮</div>
-      <div class="text-xs text-slate-400 mt-1">사주 · 자미두수 · 궁합 · 운세</div>
-    </div>
-
-    <nav class="p-3 space-y-1 flex-1 overflow-auto">
-      <a class="nav-link" href="#/">내 사주</a>
-      <a class="nav-link" href="#/ziwei">자미두수</a>
-      <a class="nav-link" href="#/daeun">대운</a>
-      <a class="nav-link" href="#/gunghap">궁합</a>
-      <a class="nav-link" href="#/daily">오늘 운세</a>
-      <div class="pt-3 mt-2 border-t border-white/10 text-[11px] uppercase tracking-wide text-slate-500 px-3">개인분석</div>
-      <a class="nav-link" href="#/biorhythm">바이오리듬</a>
-      <a class="nav-link" href="#/mbti">MBTI 검사</a>
-      <a class="nav-link" href="#/investment">투자성향분석</a>
-      <a class="nav-link" href="#/lotto">로또번호 추천</a>
-      <a class="nav-link" href="#/stock-timing">시간대별 주가분석</a>
-    </nav>
-  </aside>
-
-  <!-- Main -->
-  <main class="flex-1 p-4 md:p-6">
-    <div class="max-w-5xl mx-auto">
-      <div id="app"></div>
-    </div>
-  </main>
-</div>
-
-    <!-- Right Offcanvas: 계정 · 설정 -->
-    <aside
-      data-oc-right-panel
-      class="fixed z-50 inset-y-0 right-0 w-80 max-w-[85vw] bg-white border-l translate-x-full transition-transform duration-200 flex flex-col"
-    >
-      <div class="p-4 flex items-center justify-between border-b">
-        <div class="font-semibold">계정 · 설정</div>
-        <button data-oc-right-close class="w-9 h-9 rounded-lg border bg-white">✕</button>
-      </div>
-      <div class="p-4 space-y-5 overflow-auto flex-1">
-        <div id="userBadge" class="rounded-xl border bg-slate-50"></div>
-
+    <div data-oc-overlay class="drawer-overlay hidden"></div>
+    <aside id="siteMenu" data-oc-panel class="site-drawer -translate-x-full" aria-label="전체 메뉴" aria-hidden="true">
+      <div class="drawer-header">
         <div>
-          <div class="text-xs font-medium text-slate-500 mb-1">API 서버 주소</div>
-          <div class="flex gap-2">
-            <input id="apiBaseInput" class="flex-1 min-w-0 px-3 py-2 rounded-xl border bg-white text-sm" />
-            <button id="saveApiBaseBtn" class="btn-secondary text-sm shrink-0">저장</button>
-          </div>
-          <div class="text-[11px] text-slate-400 mt-1">현재 연결: <span id="apiBaseLabel"></span></div>
+          <div class="drawer-kicker">FORTUNE PLATFORM</div>
+          <div class="drawer-title">전체 메뉴</div>
         </div>
+        <button type="button" data-oc-close class="drawer-close" aria-label="메뉴 닫기">✕</button>
       </div>
-      <div class="p-4 border-t text-[11px] text-slate-400">
-        사주/운세/개인분석은 참고용 데모입니다.
-      </div>
+      <nav class="drawer-nav" aria-label="서비스 메뉴">
+        <div class="drawer-section-title">운세 분석</div>
+        <a class="nav-link" href="#/">내 사주</a>
+        <a class="nav-link" href="#/ziwei">자미두수 명반</a>
+        <a class="nav-link" href="#/daeun">대운</a>
+        <a class="nav-link" href="#/gunghap">궁합</a>
+        <a class="nav-link" href="#/daily">오늘 운세</a>
+        <div class="drawer-section-title">개인 분석</div>
+        <a class="nav-link" href="#/biorhythm">바이오리듬</a>
+        <a class="nav-link" href="#/mbti">MBTI 검사</a>
+        <a class="nav-link" href="#/investment">투자성향분석</a>
+        <a class="nav-link" href="#/lotto">로또번호 추천</a>
+        <a class="nav-link" href="#/stock-timing">시간대별 주가분석</a>
+      </nav>
+      <div class="drawer-footnote">오늘의 선택에 참고할 수 있는 운세 정보</div>
     </aside>
 
+    <div data-oc-right-overlay class="drawer-overlay hidden"></div>
+    <aside id="accountPanel" data-oc-right-panel class="account-drawer translate-x-full" aria-label="계정 및 설정" aria-hidden="true">
+      <div class="drawer-header">
+        <div>
+          <div class="drawer-kicker">MY FORTUNE</div>
+          <div class="drawer-title">계정 · 설정</div>
+        </div>
+        <button type="button" data-oc-right-close class="drawer-close" aria-label="계정 및 설정 닫기">✕</button>
+      </div>
+      <div class="account-content">
+        <div id="userBadge" class="account-badge"></div>
+        <div>
+          <label class="account-label" for="apiBaseInput">API 서버 주소</label>
+          <div class="account-input-row">
+            <input id="apiBaseInput" class="account-input" />
+            <button type="button" id="saveApiBaseBtn" class="btn-secondary">저장</button>
+          </div>
+          <div class="account-hint">현재 연결: <span id="apiBaseLabel"></span></div>
+        </div>
+      </div>
+      <div class="drawer-footnote">사주와 운세는 참고용 정보입니다.</div>
+    </aside>
+
+    <main class="site-main">
+      <div id="app"></div>
+    </main>
+    <footer class="site-footer">© 2026 Fortune. All rights reserved.</footer>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>

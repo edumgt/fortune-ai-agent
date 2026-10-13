@@ -32,7 +32,7 @@ services:
     image: fortune-web:local
     container_name: fortune-web
     ports:
-      - "8080:80"
+      - "${WEB_PORT:-18080}:80"
     depends_on:
       - api
     restart: unless-stopped
