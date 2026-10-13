@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "pnpm -C apps/api dev & pnpm -C apps/web dev",
     "build": "pnpm -C apps/web build",
+    "test": "node --test packages/engine/test/*.test.js",
     "lint": "echo \"(demo)\""
   }
 }

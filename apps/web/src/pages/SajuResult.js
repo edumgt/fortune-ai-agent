@@ -62,6 +62,7 @@ export function SajuResultPage(state) {
 
       ${card("대운(미리보기)", renderDaeunMini(r.daeun), `
         <a href="#/daeun" class="inline-flex btn-primary">대운 자세히</a>
+        <a href="#/ziwei" class="inline-flex btn-secondary ml-2">같은 출생 정보로 자미두수 보기</a>
       `)}
     </div>
   `;

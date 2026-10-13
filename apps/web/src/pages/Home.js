@@ -80,7 +80,8 @@ export function HomePage(state) {
         ${card("사용 가이드", `
           <div class="space-y-2 text-sm text-slate-700">
             <div>1) 생년월일시 입력 → 사주팔자/오행/십신/대운 요약을 확인합니다.</div>
-            <div>2) 궁합은 2명 입력 → 점수/관계(합/충/해/파)까지 표시됩니다.</div>
+            <div>2) <a href="#/ziwei" class="text-indigo-700 underline">자미두수</a>는 12궁 명반과 별의 배치를 보여줍니다.</div>
+            <div>3) 궁합은 2명 입력 → 점수/관계(합/충/해/파)까지 표시됩니다.</div>
             <div class="mt-3">${alertBox("warn", "주의: 사주/운세는 참고용 데모입니다. 규칙(야자시/대운기산)은 유파별 차이가 큽니다.")}</div>
           </div>
         `)}
@@ -114,6 +115,8 @@ export function HomeMount(state) {
     try {
       const data = await calcSaju(input);
       state.lastResult = data.result;
+      state.ziweiForm = null;
+      state.ziweiResult = null;
       location.hash = "#/result";
     } catch (err) {
       if (msg) msg.innerHTML = alertBox("error", `오류: ${err.message || err}`);

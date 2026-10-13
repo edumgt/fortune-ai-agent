@@ -5,6 +5,7 @@
   "type": "commonjs",
   "license": "MIT",
   "dependencies": {
-    "@fullstackfamily/manseryeok": "^1.0.5"
+    "@fullstackfamily/manseryeok": "^1.0.5",
+    "iztro": "^2.6.2"
   }
 }

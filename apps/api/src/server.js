@@ -12,6 +12,7 @@ const mbtiRoutes = require("./routes/mbti");
 const investmentRoutes = require("./routes/investment");
 const lottoRoutes = require("./routes/lotto");
 const stockTimingRoutes = require("./routes/stockTiming");
+const ziweiRoutes = require("./routes/ziwei");
 const { seedTestAccounts } = require("./lib/users");
 
 const app = express();
@@ -31,6 +32,7 @@ app.use("/api/mbti", mbtiRoutes);
 app.use("/api/investment", investmentRoutes);
 app.use("/api/lotto", lottoRoutes);
 app.use("/api/stock-timing", stockTimingRoutes);
+app.use("/api/ziwei", ziweiRoutes);
 
 const port = process.env.PORT || 3000;
 app.listen(port, async () => {

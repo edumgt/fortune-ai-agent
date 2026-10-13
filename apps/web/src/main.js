@@ -15,9 +15,10 @@ import { MbtiPage, MbtiMount } from "./pages/Mbti.js";
 import { InvestmentPage, InvestmentMount } from "./pages/Investment.js";
 import { LottoPage, LottoMount } from "./pages/Lotto.js";
 import { StockTimingPage, StockTimingMount } from "./pages/StockTiming.js";
+import { ZiweiPage, ZiweiMount } from "./pages/Ziwei.js";
 import { API_BASE, getUser, logout, setApiBase } from "./api.js";
 
-const state = { form: null, lastResult: null };
+const state = { form: null, lastResult: null, ziweiForm: null, ziweiResult: null };
 
 function renderUserBadge() {
   const user = getUser();
@@ -57,6 +58,7 @@ function render() {
   const routes = {
     "/": { view: () => HomePage(state), mount: () => HomeMount(state) },
     "/result": { view: () => SajuResultPage(state), mount: () => SajuResultMount(state) },
+    "/ziwei": { view: () => ZiweiPage(state), mount: () => ZiweiMount(state) },
     "/daeun": { view: () => DaeunPage(state), mount: () => DaeunMount(state) },
     "/gunghap": { view: () => GunghapPage(state), mount: () => GunghapMount(state) },
     "/daily": { view: () => DailyFortunePage(state), mount: () => DailyFortuneMount(state) },

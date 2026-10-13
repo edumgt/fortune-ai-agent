@@ -11,6 +11,7 @@ const { calcBiorhythm } = require("./domain/biorhythm");
 const { getQuestions: getMbtiQuestions, scoreMbti } = require("./domain/mbti");
 const { getQuestions: getInvestmentQuestions, scoreInvestment } = require("./domain/investment");
 const { generateLotto } = require("./domain/lotto");
+const { calculateZiwei } = require("./domain/ziwei");
 
 async function calcAll(input, ruleset) {
   const saju = await calculateSajuSolar(input);
@@ -35,6 +36,7 @@ module.exports = {
   getInvestmentQuestions,
   scoreInvestment,
   generateLotto,
+  calculateZiwei,
   // 저수준 함수: ml-predict 엔드포인트에서 공개 API 경계를 통해 접근
   calculateSajuSolar,
   deriveElements,

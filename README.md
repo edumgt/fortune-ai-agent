@@ -6,6 +6,7 @@ Node(CommonJS) + Open-source manseryeok 기반으로 **사주/대운/궁합/풀�
 
 ## 주요 기능
 - 🔮 사주팔자(사주 계산, 오행, 십신, 대운)
+- 🌌 자미두수(12궁 명반, 주성·보조성·사화, 궁별 간단 풀이)
 - 💑 궁합(합/충/해/파 분석 + 점수)
 - 📅 오늘의 운세(일진·세운 기반 연애/직업/재물/건강운)
 - 🤖 **Agentic AI 사주 분석** — Plan→Execute→Reflect→Synthesize 루프 기반 자율 심층 분석
@@ -75,6 +76,7 @@ npx web-push generate-vapid-keys
 | POST | `/api/auth/login` | 로그인 |
 | GET | `/api/auth/me` | 내 정보 (JWT 필요) |
 | POST | `/api/saju/calc` | 사주/오행/십신/대운 계산 + ML 예측(compact, 양력/음력 입력 지원) |
+| POST | `/api/ziwei/calc` | 자미두수 12궁 명반 계산(양력/음력·윤달 지원) |
 | POST | `/api/saju/ml-predict` | ML/DL 상세 예측 (피처 벡터·임베딩 포함) |
 | POST | `/api/saju/agentic` | **Agentic AI** 종합 분석 (Plan→Execute→Reflect→Synthesize) |
 | POST | `/api/gunghap` | 궁합 계산 |
@@ -123,6 +125,24 @@ pip3 install -r apps/api/scripts/requirements.txt
 - 사주 계산은 `@fullstackfamily/manseryeok` 라이브러리를 사용하며, 해당 라이브러리는 KASI(한국천문연구원) 음양력 변환 데이터를 기반으로 구축되어 있습니다.
 - `/api/saju/calc`, `/api/saju/ml-predict`, `/api/saju/agentic` 요청에서 `calendarType: "lunar"`를 전달하면 음력 입력(윤달 포함 시 `isLeapMonth: true`)을 양력으로 변환 후 사주를 계산합니다.
 - 계산 응답에는 데이터 출처(`dataSource`)와 음력 변환 정보(`convertedFromLunar`, `solarDateUsed`)가 포함됩니다. (`/api/saju/calc`·`/api/saju/agentic`: `result.saju.meta`, `/api/saju/ml-predict`: `result.sajuMeta`)
+
+## 자미두수 명반
+
+- 왼쪽 메뉴의 **자미두수**에서 양력 또는 음력 생년월일시와 성별을 입력하면 12궁 명반, 주성·보조성·사화 및 네 영역의 간단한 별 상징 풀이를 볼 수 있습니다. 사주 결과 화면에서도 같은 출생 정보로 이동할 수 있습니다.
+- 계산은 [iztro](https://github.com/SylarLong/iztro)의 한국어 명반을 사용합니다. 음력 윤달은 `isLeapMonth: true`로 지정하며, iztro의 윤달 앞뒤 보정 규칙(`fixLeap: true`)을 적용합니다.
+- `hour`는 0~23시입니다. 0시는 조자시, 23시는 야자시로 구분합니다. 자미두수 명반에는 경도·진태양시 보정을 적용하지 않습니다. 별 상징 풀이는 참고용이며 유파별 해석 차이가 있습니다.
+
+`POST /api/ziwei/calc` 요청 예시:
+
+```json
+{
+  "year": 1990, "month": 1, "day": 1,
+  "hour": 9, "minute": 0, "gender": "M",
+  "calendarType": "solar"
+}
+```
+
+응답의 `result.palaces`에 12궁의 별 배치가, `result.reading`에 간단 풀이가 담깁니다.
 
 ## Agentic AI 아키텍처
 

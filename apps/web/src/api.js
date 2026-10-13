@@ -55,6 +55,10 @@ export async function calcSaju(input) {
   return jpost("/api/saju/calc", input);
 }
 
+export async function calcZiwei(input) {
+  return jpost("/api/ziwei/calc", input);
+}
+
 export async function calcGunghap(a, b) {
   return jpost("/api/gunghap", { a, b });
 }
