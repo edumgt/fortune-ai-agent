@@ -2,6 +2,8 @@
 
 Node(CommonJS) + Open-source manseryeok 기반으로 **사주/대운/궁합/풀이/오늘운세** 가 동작하는 플랫폼입니다.
 
+LLM이 이 저장소를 읽을 때는 [llms.txt](llms.txt)를 먼저 본다.
+
 ![alt text](image.png)
 
 ## 주요 기능
