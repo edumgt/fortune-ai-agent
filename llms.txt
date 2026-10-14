@@ -1,0 +1,86 @@
+# Fortune Platform
+
+> pnpm 모노레포. `@fullstackfamily/manseryeok`(KASI 음양력)과 `iztro`로 사주·자미두수를 계산하고, Express API와 Vite 해시 라우터 웹으로 궁합·오늘운세·Agentic 분석·개인분석 모듈을 제공한다. 계산의 단일 출처는 `packages/engine`이다.
+
+패키지 이름은 `fortune-platform`, 엔진 패키지는 `@fortune/engine`이다. `packages/engine`과 `apps/api`는 CommonJS(`require`)이고 `apps/web`만 ESM(`import`)이다. 새 운세 로직은 엔진 도메인에 두고 API는 얇은 라우트로 노출한다. 웹은 API를 직접 다시 구현하지 않는다.
+
+사주 입력은 `year`, `month`, `day`, `hour`(0–23), `minute`, `gender`(`M`/`F`)와 선택 필드 `longitude`, `calendarType`(`solar`|`lunar`), `isLeapMonth`다. 음력은 양력으로 바꾼 뒤 계산하며, 응답 메타에 `dataSource`, `convertedFromLunar`, `solarDateUsed`가 있다. 대운 기준은 `packages/engine/src/rulesets/standard.kr.js`(`standard.kr`, `Asia/Seoul`, 양년·성별 순역행, 3일=1년, 10년×10주기)에 고정한다. 만세력 절기 데이터는 2020–2030년만 지원하므로 그 밖 연도는 대운 시작 나이 없이 순서만 표시한다.
+
+자미두수는 경도·진태양시 보정을 하지 않는다. 0시는 조자시, 23시는 야자시이며 윤달은 `isLeapMonth: true`와 iztro `fixLeap: true`를 쓴다. 별 풀이는 참고용이다.
+
+Agentic 분석은 `packages/engine/src/agent`의 Plan → Execute → Reflect → Synthesize 루프다. 도구는 `saju_calc`, `ml_predict`, `element_detail`, `ten_gods_detail`이 항상 실행되고, `daeun_forecast`는 gender가 있을 때, `daily_context`는 기본 포함, `consistency_check`는 ML 신뢰도 40% 미만 또는 오행 균형도 50 미만일 때 반사적으로 추가된다. ML은 외부 프레임워크 없이 24차원 피처, 60간지×8 임베딩, MLP 24→16→8→5(ReLU×2+Softmax)로 `대길|길|중길|흉|대흉`을 낸다. 가중치는 학습된 모델이 아니라 명리 규칙으로 초기화한 데모다.
+
+시간대별 주가 분석만 Python이다. API가 `python3`로 `apps/api/scripts/stock_timing.py`와 `ticker_search.py`를 `execFile` 호출한다. 허용 심볼·기간(`3mo|6mo|1y|2y`)·간격(`1h|60m`) 검증을 우회하지 않는다. Yahoo 분봉 제약으로 1년 분석은 1시간봉을 쓰고, 장초반/점심/마감은 그날 첫·가운데·마지막 봉의 근사다.
+
+인증은 JWT다. `POST /api/auth/register|login`은 15분 20회 rate limit, 비밀번호 최소 6자다. `GET /api/auth/me`와 푸시 구독/해제는 `authMiddleware`가 필요하다. 사용자·구독 데이터는 API 프로세스의 파일 스토어이며 Docker에서는 `fortune-data` 볼륨(`/app/data`)이다. `JWT_SECRET`, VAPID 키, `PUSH_CRON_SECRET`은 환경 변수로만 주입하고 저장소에 넣지 않는다.
+
+로컬 기본 포트는 API 3000, 웹 5173이다. Docker는 API 3100, 웹 `${WEB_PORT:-18080}`→80이고 웹 이미지 빌드 인자 `VITE_API_BASE` 기본값은 `http://localhost:3100`이다. 헬스체크는 `GET /health`. 테스트는 `pnpm test`로 `packages/engine/test/*.test.js`만 실행한다. 사주·운세·로또·투자·주가 결과는 참고용 데모이며 투자·의료 조언이 아니다.
+
+## Docs
+
+- [README](README.md): 기능 목록, 로컬·Docker 실행, API 표, Agentic/ML 아키텍처, KASI·자미두수 주의, 면책
+
+## Engine
+
+- [Public exports](packages/engine/src/index.js): `calcAll`, `compareGunghap`, `calcDailyFortune`, `mlPredict`, `analyzeAgentic`, `calcBiorhythm`, MBTI, 투자성향, `generateLotto`, `calculateZiwei`
+- [Manseryeok adapter](packages/engine/src/adapters/manseryeok.js): 음양력 변환과 사주팔자 계산
+- [Ruleset](packages/engine/src/rulesets/standard.kr.js): 한국 표준 대운·해석 로케일. 유파 차이는 여기만 바꾼다
+- [Elements](packages/engine/src/domain/elements.js): 오행 산출
+- [Ten gods](packages/engine/src/domain/tenGods.js): 십신 산출
+- [Daeun](packages/engine/src/domain/daeun.js): 대운 10년 주기
+- [Relations](packages/engine/src/domain/relations.js): 궁합(합/충/해/파)과 점수. 요청 본문은 `{ a, b }`
+- [Daily fortune](packages/engine/src/domain/daily.js): 일진·세운 기반 오늘 운세
+- [Ziwei](packages/engine/src/domain/ziwei.js): iztro 12궁 명반과 간단 풀이
+- [Interpretation](packages/engine/src/domain/interpret/scorer.js): 사주 풀이 점수와 한국어 템플릿 연결
+- [Agent loop](packages/engine/src/agent/index.js): Plan→Execute→Reflect→Synthesize 진입점 `analyzeAgentic`
+- [Agent tools](packages/engine/src/agent/tools.js): 도구 레지스트리와 오행 생극 표
+- [Planner](packages/engine/src/agent/planner.js): 입력에 따른 도구 선택
+- [Reflector](packages/engine/src/agent/reflector.js): ML 신뢰도·오행 균형 자기 점검
+- [Synthesizer](packages/engine/src/agent/synthesizer.js): `executiveSummary`, `fortune.areas`, `recommendations`, `agenticTrace`
+- [ML entry](packages/engine/src/ml/index.js): 예측 API. compact는 임베딩을 빼고, ml-predict는 피처·임베딩을 포함한다
+- [Feature extractor](packages/engine/src/ml/featureExtractor.js): 24차원 정규화 피처
+- [Embeddings](packages/engine/src/ml/embeddings.js): 60×8 간지 임베딩
+- [Network](packages/engine/src/ml/network.js): MLP 순전파
+- [Biorhythm](packages/engine/src/domain/biorhythm.js): 신체 23일·감정 28일·지성 33일
+- [MBTI](packages/engine/src/domain/mbti.js): EI/SN/TF/JP × 5, 답은 `"a"`/`"b"` 20개
+- [Investment](packages/engine/src/domain/investment.js): 10문항(0–3)과 선택 `personalInfo`로 5단계 성향·자산배분 리포트
+- [Lotto](packages/engine/src/domain/lotto.js): 생일 기반 당일 고정 행운번호와 무작위 세트. 당첨 예측이 아니다
+
+## API
+
+- [Server](apps/api/src/server.js): Express 마운트, CORS `*`, JSON 1mb, `GET /health`, 기동 시 테스트 계정 시드
+- [Saju routes](apps/api/src/routes/saju.js): `POST /api/saju/calc`, `/ml-predict`, `/agentic`
+- [Ziwei route](apps/api/src/routes/ziwei.js): `POST /api/ziwei/calc`
+- [Gunghap route](apps/api/src/routes/gunghap.js): `POST /api/gunghap`
+- [Daily route](apps/api/src/routes/daily.js): `POST /api/daily`, `GET /api/daily/today-ganzhi`
+- [Auth route](apps/api/src/routes/auth.js): 회원가입·로그인·`/me`
+- [Auth helpers](apps/api/src/lib/auth.js): JWT 서명과 `authMiddleware`
+- [Users store](apps/api/src/lib/users.js): 파일 기반 사용자와 테스트 계정 시드
+- [Push route](apps/api/src/routes/push.js): VAPID 공개키, 구독, cron용 `POST /api/push/send-daily`
+- [Biorhythm route](apps/api/src/routes/biorhythm.js): `POST /api/biorhythm`
+- [MBTI route](apps/api/src/routes/mbti.js): 문항 조회와 채점
+- [Investment route](apps/api/src/routes/investment.js): 문항 조회와 리포트
+- [Lotto route](apps/api/src/routes/lotto.js): `POST /api/lotto`
+- [Stock timing route](apps/api/src/routes/stockTiming.js): `GET /api/stock-timing`, `GET /api/stock-timing/search`
+- [Stock timing script](apps/api/scripts/stock_timing.py): yfinance 1시간봉 구간 비교
+- [Ticker search script](apps/api/scripts/ticker_search.py): 티커·한글 회사명 검색
+
+## Web
+
+- [App shell](apps/web/src/main.js): 해시 라우트 `#/`, `#/result`, `#/ziwei`, `#/daeun`, `#/gunghap`, `#/daily`, `#/login`, `#/register`, `#/biorhythm`, `#/mbti`, `#/investment`, `#/lotto`, `#/stock-timing`
+- [API client](apps/web/src/api.js): `API_BASE`, 로그인 사용자, 토큰
+- [Home](apps/web/src/pages/Home.js): 사주 입력
+- [Saju result](apps/web/src/pages/SajuResult.js): 사주 결과와 자미두수 이동
+- [Service worker](apps/web/public/sw.js): Web Push
+
+## Optional
+
+- [Workspace manifest](pnpm-workspace.yaml): `packages/*`, `apps/*`. 패키지 매니저는 pnpm 9.15.0
+- [Root scripts](package.json): `pnpm dev`, `pnpm -C apps/api dev`, `pnpm -C apps/web dev`, `pnpm build`, `pnpm test`
+- [Docker Compose](docker-compose.yml): `fortune-api`, `fortune-web`, `fortune-data` 볼륨
+- [API image](apps/api/Dockerfile): 프로덕션 API 이미지
+- [Web image](apps/web/Dockerfile): 정적 웹 이미지. `VITE_API_BASE`는 빌드 시점 값이다
+- [Docker Hub workflow](.github/workflows/docker-build-push.yml): `main` push 시 API·웹 이미지 푸시. 시크릿 `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`
+- [Synthetics workflow](.github/workflows/datadog-synthetics.yml): Datadog synthetic 점검
+- [Python requirements](apps/api/scripts/requirements.txt): 주가 스크립트 의존성. `tzdata` 누락 시 타임존 오류
+- [Ziwei tests](packages/engine/test/ziwei.test.js): 현재 엔진 테스트 범위. `node --test packages/engine/test/*.test.js`
